@@ -46,7 +46,6 @@ int main(int argc, char** argv) {
         
         pCards=rand()%20+MINCARD;  //random draw between the range of 2-21
         pTotal+=pCards;
-        
         cCards=rand()%10+MINCARD;  //random draw between the range of 2-11
         cTotal+=cCards;
         //User's two initial card
