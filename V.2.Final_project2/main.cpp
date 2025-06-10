@@ -24,21 +24,17 @@ using namespace std;
 
 //Global Constants not Variables
 //Science, Math, Conversions, Dimensions
-const int MINCARD=2;  //minimum card value
-const int MAXCARD=11; //maximum card value, Ace=11
-const int MAXVAL=21;  //Highest value allowed in Blackjack
-const int DECSIZE=52; //Total cards in a standard deck
 
 //Function Prototypes
 void start(string&, bool&, int&, int&);  //Input name and check for saved
-void pTurn(string, int&, int&, int&, string[], int[], int, int&);       //User's turn loop
-void dTurn(string, int&, int&, int&, int&, string[], int[], int, int&); //dealer's turn
+void pTurn(string, int&, int&, int&, string[], int[], int, int&,const int);       //User's turn loop
+void dTurn(string, int&, int&, int&, int&, string[], int[], int, int&, const int); //dealer's turn
 void stats(int , int);                   //Win stats
 void saveGam(string, int, int);          //Save game stats
 void bldDeck(string [],int [], string [], string [] //build deck of cards
             ,int [],const int);
 void shuffle(string [],int [], int);     //shuffle deck/swapping
-void forAces(int &, int &);             //converting ace 11 to 1
+void forAces(int &, int &, const int);             //converting ace 11 to 1
 void swpCard(int &, int &, string &, string &); //swapping value
 void srtDeck(string [],int [], int);     //sorting deck
 void prtDeck(string [],int [], int, int);     //show deck
@@ -57,6 +53,10 @@ int main(int argc, char** argv) {
     string name;                 //USer's name & temporary file word
     bool found = false;                 //indicate if existing user found
     int perLine=4;
+    const int MAXVAL=21;  //Highest value allowed in Blackjack
+    const int DECSIZE=52; //Total cards in a standard deck
+    const int MINCARD=2;  //minimum card value
+    const int MAXCARD=11; //maximum card value, Ace=11
     
     //Face values, suits, and corresponding numerical values
     string face[]={"2","3","4","5",
@@ -108,7 +108,7 @@ int main(int argc, char** argv) {
             if (deckVal[topCard]==11)pAces++;
             topCard++;
         }
-        forAces(pTotal,pAces);
+        forAces(pTotal,pAces,MAXVAL);
         cout << "Total = " << pTotal << endl;
         cout << endl;
         
@@ -117,13 +117,13 @@ int main(int argc, char** argv) {
         cTotal+=deckVal[topCard];
         if (deckVal[topCard]==11)cAces++;
         topCard++;
-        forAces(cTotal, cAces);
+        forAces(cTotal, cAces,MAXVAL);
         cout<<endl;
         
-        pTurn(name,pTotal,wins,topCard,deck,deckVal,DECSIZE,pAces); //User's turn
+        pTurn(name,pTotal,wins,topCard,deck,deckVal,DECSIZE,pAces,MAXVAL); //User's turn
         
         if(pTotal<MAXVAL) {     //Dealer/computer's turn if player hasn't busted
-            dTurn(name,pTotal,cTotal,wins,topCard,deck,deckVal,DECSIZE,cAces);
+            dTurn(name,pTotal,cTotal,wins,topCard,deck,deckVal,DECSIZE,cAces,MAXVAL);
         }
         
         rounds++;               //counts the rounds
@@ -166,7 +166,7 @@ void start(string &name, bool &found, int &wins, int &rounds) {
 }
 
 void pTurn(string name, int &pTotal, int &wins, int &topCard,
-        string deck[], int deckVal[], int size, int &pAces) { //User's turn
+        string deck[], int deckVal[], int size, int &pAces, const int MAXVAL) { //User's turn
     char move;
     do { //User's decision loop for hit or stand 
         cout<<name<<" Hit(h) or Stand(s)? : ";   //Hit=another card or Stand=stay
@@ -177,7 +177,7 @@ void pTurn(string name, int &pTotal, int &wins, int &topCard,
             pTotal += deckVal[topCard];
             if (deckVal[topCard] == 11) pAces++;
             topCard++;
-            forAces(pTotal,pAces);
+            forAces(pTotal,pAces,MAXVAL);
             cout<<"a new total of = "<<pTotal<<endl;
         }
         if (pTotal>MAXVAL){               //if its over 21 game over
@@ -193,7 +193,7 @@ void pTurn(string name, int &pTotal, int &wins, int &topCard,
 }
 
 void dTurn(string name, int &pTotal, int &cTotal, int &wins,
-        int &topCard, string deck[], int deckVal[], int size, int &cAces) { //dealer's turn
+        int &topCard, string deck[], int deckVal[], int size, int &cAces, const int MAXVAL) { //dealer's turn
     cout<<"Dealer's turn:"<<endl;
     cout<<"Dealer reveals second card..." << endl;
     
@@ -202,7 +202,7 @@ void dTurn(string name, int &pTotal, int &cTotal, int &wins,
     cTotal += deckVal[topCard];
     if (deckVal[topCard] == 11) cAces++;
     topCard++;
-    forAces(cTotal,cAces);
+    forAces(cTotal,cAces,MAXVAL);
     cout << "Dealer's first 2 cards are total of: " << cTotal << endl;
     
     while(cTotal<17){                 //Dealer hits until 17 or more
@@ -210,7 +210,7 @@ void dTurn(string name, int &pTotal, int &cTotal, int &wins,
         cTotal += deckVal[topCard];
         if (deckVal[topCard] == 11) cAces++;
         topCard++;
-        forAces(cTotal,cAces);
+        forAces(cTotal,cAces,MAXVAL);
         cout << "Dealer's new total: " << cTotal << endl;
         cout << endl;
     }
@@ -271,7 +271,7 @@ void shuffle(string deck[],int deckVal[],const int size) {
     }
 }
 
-void forAces(int &total, int &aceC) {
+void forAces(int &total, int &aceC, const int MAXVAL) {
     bool swap=false;
     while (total > MAXVAL && aceC > 0) {
         total -= 10;  //convert an Ace from 11 to 1
