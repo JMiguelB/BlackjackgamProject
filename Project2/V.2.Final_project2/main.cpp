@@ -38,7 +38,7 @@ void forAces(int &, int &, const int);             //converting ace 11 to 1
 void swpCard(int &, int &, string &, string &); //swapping value
 void srtDeck(string [],int [], int);     //sorting deck
 void prtDeck(string [],int [], int, int);     //show deck
-string getFace(string &);
+string getFace(string &);             //help swap the Ace at the end custom sort
 
 //Execution begins here at main
 int main(int argc, char** argv) {
@@ -283,15 +283,6 @@ void forAces(int &total, int &aceC, const int MAXVAL) {
     }
 }
 
-string getFace(string &deck) {   //help swap the Ace at the end custom sort
-    string face = "";
-    int i = 0;
-    while (deck[i] != ' ') {  //Stop at the first space
-        face += deck[i++];
-    }
-    return face;
-}
-
 //swap the values and card names
 void swpCard(int &a, int &b, string &s1, string &s2){ 
     int temp=a;   //Swap integer valuess
@@ -332,4 +323,13 @@ void prtDeck(string deck[],int deckVal[],int size, int perLine) { //display
         cout << setw(20)<<deck[i]<< " (" <<deckVal[i] <<")  "; 
         if(i%perLine==(perLine-1))cout<<endl;
     }
+}
+
+string getFace(string &deck) {   //help swap the Ace at the end custom sort
+    string face = "";
+    int i = 0;
+    while (deck[i] != ' ') {  //Stop at the first space
+        face += deck[i++];
+    }
+    return face;
 }
